@@ -29,6 +29,11 @@ class Interpreter(object):
 
 		currentChar = text[self.indexInText]
 
+		if currentChar.isspace():
+			self.indexInText += 1
+			token = self.currentToken = self.get_next_token()
+			return token
+
 		if currentChar.isdigit():
 			token = Token(INTEGER, int(currentChar))
 			self.indexInText += 1
