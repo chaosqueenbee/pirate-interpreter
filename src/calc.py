@@ -1,4 +1,4 @@
-INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
+INTEGER, PLUS, MINUS, MULTIPLY, DIVIDE, EOF = 'INTEGER', 'PLUS', 'MINUS', 'MULTIPLY', 'DIVIDE','EOF'
 
 class Token(object):
     def __init__(self, type, value):
@@ -60,6 +60,16 @@ class Interpreter(object):
 			self.indexInText += 1
 			return token
 
+		if currentChar == '*':
+			token = Token(MULTIPLY, currentChar)
+			self.indexInText += 1
+			return token
+
+		if currentChar == '/':
+			token = Token(DIVIDE, currentChar)
+			self.indexInText += 1
+			return token
+
 		raise Exception("Invalid input: {}".format(currentChar))
 
 	def eatAndGetValue(self, tokenType):
@@ -85,6 +95,15 @@ class Interpreter(object):
 			elif token.type == MINUS:
 				self.eatAndGetValue(MINUS)
 				result -= self.eatAndGetValue(INTEGER)
+
+		while self.currentToken.type in (MULTIPLY, DIVIDE):
+			token = self.currentToken
+			if token.type == MULTIPLY:
+				self.eatAndGetValue(MULTIPLY)
+				result *= self.eatAndGetValue(INTEGER)
+			elif token.type == DIVIDE:
+				self.eatAndGetValue(DIVIDE)
+				result /= self.eatAndGetValue(INTEGER)
 		return result
 
 def main():
