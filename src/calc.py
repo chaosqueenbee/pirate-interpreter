@@ -21,6 +21,18 @@ class Interpreter(object):
 		# current token index
 		self.currentToken = None
 
+	def get_integer(self):
+		result = ''
+		curChar = self.text[self.indexInText]
+		while curChar is not None and curChar.isdigit():
+			result += curChar
+			self.indexInText += 1
+			if self.indexInText > len(self.text) - 1:
+				curChar = None  # Indicates end of input
+			else:
+				curChar = self.text[self.indexInText]
+		return int(result)
+
 	def get_next_token(self):
 		text = self.text
 
@@ -31,12 +43,11 @@ class Interpreter(object):
 
 		if currentChar.isspace():
 			self.indexInText += 1
-			token = self.currentToken = self.get_next_token()
+			token = self.get_next_token()
 			return token
 
 		if currentChar.isdigit():
-			token = Token(INTEGER, int(currentChar))
-			self.indexInText += 1
+			token = Token(INTEGER, self.get_integer())
 			return token
 
 		if currentChar == '+':
