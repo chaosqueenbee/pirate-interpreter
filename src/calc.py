@@ -1,4 +1,4 @@
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'EOF'
+INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
 
 class Token(object):
     def __init__(self, type, value):
@@ -55,6 +55,11 @@ class Interpreter(object):
 			self.indexInText += 1
 			return token
 
+		if currentChar == '-':
+			token = Token(MINUS, currentChar)
+			self.indexInText += 1
+			return token
+
 		raise Exception("Invalid input: {}".format(currentChar))
 
 	def eat(self, tokenType):
@@ -72,12 +77,18 @@ class Interpreter(object):
 		self.eat(INTEGER)
 
 		operation = self.currentToken
-		self.eat(PLUS)
+		if (operation.type == PLUS):
+			self.eat(PLUS)
+		else:
+			self.eat(MINUS)
 
 		right = self.currentToken
 		self.eat(INTEGER)
 
-		result = left.value + right.value
+		if (operation.type == PLUS):
+			result = left.value + right.value
+		else:
+			result = left.value - right.value
 		return result
 
 def main():
