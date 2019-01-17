@@ -62,9 +62,11 @@ class Interpreter(object):
 
 		raise Exception("Invalid input: {}".format(currentChar))
 
-	def eat(self, tokenType):
+	def eatAndGetValue(self, tokenType):
 		if self.currentToken.type == tokenType:
+			token = self.currentToken
 			self.currentToken = self.get_next_token()
+			return token.value
 		else:
 			raise Exception("Invalid input. Current token is of type {}, but looking for type {}".format(
 				self.currentToken.type,
@@ -73,22 +75,16 @@ class Interpreter(object):
 	def expr(self):
 		self.currentToken = self.get_next_token()
 
-		left = self.currentToken
-		self.eat(INTEGER)
+		result = self.eatAndGetValue(INTEGER)
 
-		operation = self.currentToken
-		if (operation.type == PLUS):
-			self.eat(PLUS)
-		else:
-			self.eat(MINUS)
-
-		right = self.currentToken
-		self.eat(INTEGER)
-
-		if (operation.type == PLUS):
-			result = left.value + right.value
-		else:
-			result = left.value - right.value
+		while self.currentToken.type in (PLUS, MINUS):
+			token = self.currentToken
+			if token.type == PLUS:
+				self.eatAndGetValue(PLUS)
+				result += self.eatAndGetValue(INTEGER)
+			elif token.type == MINUS:
+				self.eatAndGetValue(MINUS)
+				result -= self.eatAndGetValue(INTEGER)
 		return result
 
 def main():
